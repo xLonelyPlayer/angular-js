@@ -2,29 +2,48 @@ import { PensamentoService } from './../pensamento.service';
 import { Component } from '@angular/core';
 import { Pensamento } from '../pensamento';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+
+function validateAuthorWithoutContent(): Validators {
+  return (form: FormGroup) : ValidationErrors | null => {
+    console.log(form.get('autoria')?.value)
+    if (form.get('autoria')?.value && !form.get('conteudo')?.value) {
+      return { needContent: true };
+    }
+    return null;
+  }
+}
 
 @Component({
   selector: 'app-criar-pensamento',
   templateUrl: './criar-pensamento.component.html',
-  styleUrls: ['./criar-pensamento.component.css']
+  styleUrls: ['./criar-pensamento.component.css'],
 })
 export class CriarPensamentoComponent {
+  formulario!: FormGroup;
 
-  pensamento: Pensamento = {
-    id: 0,
-    conteudo: '',
-    autoria: '',
-    modelo: '',
-  };
+  constructor(
+    private service: PensamentoService,
+    private router: Router,
+    private formBuilder: FormBuilder
+  ) { }
 
-  constructor(private service: PensamentoService, private router: Router) { }
+  ngOnInit(): void {
+    this.formulario = this.formBuilder.group({
+      conteudo: [''],
+      autoria: [''],
+      modelo: ['modelo1']
+    }, {
+      validators: [validateAuthorWithoutContent()]
+    });
+  }
 
   criarPensamento(): void {
-    if (!this.pensamento) {
+    if (!this.formulario.valid) {
       return;
     }
 
-    this.service.criar(this.pensamento).subscribe((response) => {
+    this.service.criar(this.formulario.value).subscribe((response) => {
       this.router.navigate(['/listarPensamento']);
     });
   }

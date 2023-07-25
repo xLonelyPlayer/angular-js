@@ -6,9 +6,8 @@ import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } fro
 
 function validateAuthorWithoutContent(): Validators {
   return (form: FormGroup) : ValidationErrors | null => {
-    console.log(form.get('autoria')?.value)
     if (form.get('autoria')?.value && !form.get('conteudo')?.value) {
-      return { needContent: true };
+      return { withAuthorContentMandatory: 'O pensamento é obrigatório caso houver um autor xesque' };
     }
     return null;
   }

@@ -2,10 +2,10 @@ import { PensamentoService } from './../pensamento.service';
 import { Component } from '@angular/core';
 import { Pensamento } from '../pensamento';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 function validateAuthorWithoutContent(): Validators {
-  return (form: FormGroup) : ValidationErrors | null => {
+  return (form: FormGroup): ValidationErrors | null => {
     if (form.get('autoria')?.value && !form.get('conteudo')?.value) {
       return { withAuthorContentMandatory: 'O pensamento é obrigatório caso houver um autor xesque' };
     }
@@ -29,9 +29,10 @@ export class CriarPensamentoComponent {
 
   ngOnInit(): void {
     this.formulario = this.formBuilder.group({
-      conteudo: [''],
+      conteudo: ['', [ Validators.required ]],
       autoria: [''],
-      modelo: ['modelo1']
+      modelo: ['modelo1'],
+      favorito: [false]
     }, {
       validators: [validateAuthorWithoutContent()]
     });
